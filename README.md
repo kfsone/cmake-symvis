@@ -1,8 +1,8 @@
 CMake Visibility vs Linkage Demo
 ================================
 
-This demonstrates how to resolve conflicts between libraries by using PUBLIC/PRIVATE
-specs on imports.
+This is a playground for demonstrating symbol visibility conflicts between libraries in cmake
+and ways to resolve them, e.g by using PUBLIC/PRIVATE visibility tags on links.
 
 ```cmake
 target_link_libraries (mylib yourlib)
@@ -17,6 +17,8 @@ target_link_libraries (mylib PRIVATE yourlib)
 
 means that I will be a full consumer of yourlib still, but the linker will not expose its symbols
 upstream.
+
+But can you still see *their* symbols?
 
 
 Instructions
@@ -37,14 +39,3 @@ Attempt to build:
 cmake --build build  # assuming you used '-B build',
 # cmake --build output  # if you used '-B output' instead, e.g
 ```
-
-How to fix the error
---------------------
-
-The setup simulates a mix of 1st/3rd party libraries, and as such both libc and libe define a
-`void terminal()` method outside of namespaces. Our compilation wants to use the libc 'terminal',
-but when we try to use it the compiler recognizes a conflict between that and a symbol in the
-'libe' library used by 'libd'.
-
-In this scenario, we don't *want* anyone to see the internals of whatever libd uses, so we
-can make it a PRIVATE linkage.
